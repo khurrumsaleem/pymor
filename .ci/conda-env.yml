@@ -23,6 +23,7 @@ dependencies:
   - jupyter_contrib_nbextensions
   - jupyter_server<2.0
   - jupytext
+  - k3d>=2.14
   - lxml
   - matplotlib
   - meshio>=4.4
