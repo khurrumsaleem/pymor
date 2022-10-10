@@ -1,7 +1,7 @@
 # This file is part of the pyMOR project (https://www.pymor.org).
 # Copyright pyMOR developers and contributors. All rights reserved.
 # License: BSD 2-Clause License (https://opensource.org/licenses/BSD-2-Clause)
-
+import math
 import os
 import pymordemos  # noqa: F401
 from importlib import import_module
@@ -13,7 +13,7 @@ from typer import Typer
 from typer.testing import CliRunner
 
 from pymortests.base import runmodule, check_results
-from pymor.core.exceptions import QtMissing, GmshMissing, MeshioMissing, TorchMissing
+from pymor.core.exceptions import QtMissing, GmshMissing, MeshioMissing, TorchMissing, NoTestResultDataFound
 from pymor.core.config import is_windows_platform, is_macos_platform
 from pymor.tools.mpi import parallel
 
@@ -365,6 +365,19 @@ def test_parabolic_mor_results():
                   (1e-13, 4.), 'errors', 'max_errors', 'rel_errors', 'max_rel_errors',
                   'error_estimates', 'max_error_estimates', 'effectivities',
                   'min_effectivities', 'max_effectivities', 'errors')
+
+
+def test_check_check_results_missing(tmp_path):
+    test_name = tmp_path.name
+    args = ['NONE', tmp_path]
+    results = {"error": math.pi}
+    with pytest.raises(NoTestResultDataFound):
+        check_results(test_name, args, results, "error")
+    # running same check again against now recored data must be fine
+    check_results(test_name, args, results, "error")
+    with pytest.raises(AssertionError):
+        results["error"] += 1
+        check_results(test_name, args, results, "error")
 
 
 if __name__ == "__main__":
