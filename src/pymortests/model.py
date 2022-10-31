@@ -9,11 +9,13 @@ from pymor.algorithms.basic import almost_equal
 from pymor.algorithms.timestepping import ImplicitMidpointTimeStepper
 from pymor.analyticalproblems.functions import ExpressionFunction, ConstantFunction
 from pymor.analyticalproblems.thermalblock import thermal_block_problem
-from pymor.discretizers.builtin import discretize_stationary_cg
 from pymor.core.pickle import dumps, loads
+from pymor.discretizers.builtin import discretize_stationary_cg
+from pymor.models.basic import StationaryModel
 from pymor.models.symplectic import QuadraticHamiltonianModel
 from pymor.operators.block import BlockDiagonalOperator
 from pymor.operators.constructions import IdentityOperator
+from pymor.operators.numpy import NumpyMatrixOperator
 from pymor.tools.random import new_rng
 from pymor.vectorarrays.numpy import NumpyVectorSpace
 from pymortests.base import runmodule
@@ -82,6 +84,13 @@ def test_quadratic_hamiltonian_model(block_phase_space):
 
     # check preservation of the Hamiltonian
     assert np.allclose(ham, ham[0])
+
+
+def test_StationaryModel_multiple_rhs():
+    m = StationaryModel(NumpyMatrixOperator(np.eye(2)), NumpyVectorSpace.from_numpy(np.eye(2)))
+    v = m.solve()
+    assert v in NumpyVectorSpace(2)
+    assert len(v) == 2
 
 
 if __name__ == "__main__":
