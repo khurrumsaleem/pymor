@@ -70,7 +70,7 @@ ci-conda = [
 ]
 # additional dependencies for pyMOR development
 dev = [
-  "ruff==0.13.3", # our linter of choice
+  "ruff==0.15.9", # our linter of choice
   "conda_lock==2.5.7", # needed for make ci_conda_requirements
   "hatch", # build frontend for building and publishing pyMOR images
   "uv", # to build requirements files
@@ -142,6 +142,7 @@ full-compiled = [
 ]
 
 [project.scripts]
+pymor-config = "pymor.scripts.pymor_config:app"
 pymor-demo = "pymor.scripts.pymor_demo:app.meta"
 pymor-vis = "pymor.scripts.pymor_vis:app"
 
