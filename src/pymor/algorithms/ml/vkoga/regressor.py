@@ -8,6 +8,7 @@ from pymor.algorithms.greedy import WeakGreedySurrogate, weak_greedy
 from pymor.algorithms.ml.vkoga.kernels import GaussianKernel
 from pymor.core.base import BasicObject
 from pymor.core.defaults import defaults
+from pymor.core.exceptions import ExtensionError
 
 
 class VKOGARegressor(BasicObject):
@@ -64,7 +65,7 @@ class VKOGARegressor(BasicObject):
         surrogate = VKOGASurrogate(kernel=self.kernel, X_train=X, F_train=Y, criterion=self.criterion, reg=self.reg)
 
         # use X as training set in the weak greedy algorithm
-        result = weak_greedy(surrogate, np.arange(len(X)), atol=self.tol, max_extensions=self.max_centers)
+        result = weak_greedy(surrogate, np.arange(len(X)), atol=self.tol, max_extensions=min(len(X), self.max_centers))
 
         self._surrogate = surrogate
         # store the results of the weak greedy algorithm for inspection/plotting
@@ -287,6 +288,9 @@ class VKOGASurrogate(WeakGreedySurrogate):
             idx_in_X = int(matches[0])
         else:
             idx_in_X = int(np.argmin(np.linalg.norm(self.X_train - mu, axis=1)))
+
+        if self._centers_idx is not None and idx_in_X in self._centers_idx:
+            raise ExtensionError('Center already selected.')
 
         # update the residual
         if self._V is None and self._z is None:
