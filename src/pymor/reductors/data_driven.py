@@ -274,7 +274,7 @@ class DataDrivenPODReductor(DataDrivenReductor):
     product
         Inner product |Operators| defined on the discrete space the
         problem is posed on. Used for reduced basis computation via POD and
-        or orthogonal projection onto the reduced basis.
+        orthogonal projection onto the reduced basis.
     pod_params
         Dict of additional parameters for the POD-method.
     """
@@ -296,7 +296,7 @@ class DataDrivenPODReductor(DataDrivenReductor):
             projected_training_snapshots = self.training_snapshots.inner(self.reduced_basis, product=self.product)
             projected_output_functional = None
             if self.output_functional is not None:
-                projected_output_functional = project(self.output_functional, self.reduced_basis)
+                projected_output_functional = project(self.output_functional, None, self.reduced_basis)
 
             super().__init__(self.training_parameters, projected_training_snapshots,
                              regressor=self.regressor, target_quantity='solution',
@@ -305,6 +305,7 @@ class DataDrivenPODReductor(DataDrivenReductor):
                              input_scaler=self.input_scaler, output_scaler=self.output_scaler,
                              input_scaler_fitted=self.input_scaler_fitted,
                              output_scaler_fitted=self.output_scaler_fitted)
+            self.output_functional = projected_output_functional
 
         return super().reduce(**kwargs)
 
